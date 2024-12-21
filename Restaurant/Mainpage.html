@@ -328,61 +328,50 @@
   <!-- ***********************************Address Form under settings******************************-->
   <div class="modal" tabindex="-1" id="mySettingModal">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Your Address</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="inputEmail" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com">
+                </div>
+                <label for="inputPassword5" class="form-label">Password</label>
+                <input type="password" id="inputPassword5" class="form-control" aria-describedby="passwordHelpBlock">
+                <div id="passwordHelpBlock" class="form-text">
+                    Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces,
+                    special characters, or emoji.
+                </div>
+                <div class="mb-3">
+                    <label for="inputAddress" class="form-label">Address</label>
+                    <textarea class="form-control" id="inputAddress" rows="1"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="inputState" class="form-label">State</label>
+                    <input type="text" class="form-control" id="inputState">
+                </div>
+                <div class="col-auto">
+                    <label for="inputCity" class="form-label">City</label>
+                    <input type="text" class="form-control" id="inputCity">
+                </div>
+                <div class="col-auto">
+                    <label for="inputZip" class="form-label">Zip Code</label>
+                    <input type="text" class="form-control" id="inputZip">
+                </div>
+                <div class="col-auto">
+                    <label for="inputContact" class="form-label">Contact</label>
+                    <input type="text" class="form-control" id="inputContact">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelLink">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveLink">Save</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="inputEmail" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com">
-          </div>
-
-          <label for="inputPassword5" class="form-label">Password</label>
-          <input type="password" id="inputPassword5" class="form-control" aria-describedby="passwordHelpBlock">
-          <div id="passwordHelpBlock" class="form-text">
-            Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces,
-            special characters, or emoji.
-          </div>
-          <div class="mb-3">
-            <label for="inputAddress" class="form-label">Address</label>
-            <textarea class="form-control" id="inputAddress" rows="1"></textarea>
-          </div>
-
-          <div class="mb-3">
-            <label for="inputState" class="form-label">State</label>
-            <input type="text" class="form-control" id="inputState">
-          </div>
-
-          <div class="col-auto">
-            <label for="inputCity" class="form-label">City</label>
-            <input type="text" class="form-control" id="inputCity">
-          </div>
-
-
-          <div class="col-auto">
-            <label for="inputZip" class="form-label">Zip Code</label>
-            <input type="text" class="form-control" id="inputZip">
-          </div>
-
-          <div class="col-auto">
-            <label for="inputContact" class="form-label">Contact</label>
-            <input type="text" class="form-control" id="inputContact">
-          </div>
-
-
-
-
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="cancelLink">Cancel</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveLink">Save</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
   
 
@@ -399,11 +388,38 @@
       myModal.show();
     });
 
+    //Open modal on click contact...............
     document.getElementById('contactlink').addEventListener('click', function (event) {
       event.preventDefault(); // Prevent default link behavior
       const mycontactModal = new bootstrap.Modal(document.getElementById('mycontactModal'));
-      mycontactModal.show();
+     mycontactModal.show();
     });
+
+    //Save feedback into db.............
+   document.getElementById('sendLink').addEventListener('click', function () {
+    const email = document.getElementById('exampleFormControlInput1').value;
+    const feedback = document.getElementById('exampleFormControlTextarea1').value;
+
+    if (email && feedback) {
+        fetch('PHP Files/Save_feedback.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `email=${encodeURIComponent(email)}&feedback=${encodeURIComponent(feedback)}`
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data); // Display success message
+            const mycontactModal = bootstrap.Modal.getInstance(document.getElementById('mycontactModal'));
+            mycontactModal.hide(); // Close the modal
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        alert('Please fill out all fields');
+    }
+});
+
 
     document.getElementById('settingsOption').addEventListener('click', function (event) {
       event.preventDefault(); // Prevent default link behavior
@@ -454,6 +470,35 @@
       const modalInstance = bootstrap.Modal.getInstance(modal);
       modalInstance.hide();
       //window.close();
+    });
+
+
+    //Save personal dts into db..............
+    document.getElementById('saveLink').addEventListener('click', function () {
+        const data = {
+            email: document.getElementById('inputEmail').value,
+            password: document.getElementById('inputPassword5').value,
+            address: document.getElementById('inputAddress').value,
+            state: document.getElementById('inputState').value,
+            city: document.getElementById('inputCity').value,
+            zipcode: document.getElementById('inputZip').value,
+            contact: document.getElementById('inputContact').value
+        };
+
+        fetch('PHP Files/Personal_Dts.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data).toString()
+        })
+            .then(response => response.text())
+            .then(result => {
+                alert(result); // Display feedback from PHP script
+                const mySettingModal = bootstrap.Modal.getInstance(document.getElementById('mySettingModal'));
+                mySettingModal.hide();
+            })
+            .catch(error => console.error('Error:', error));
     });
 
 
